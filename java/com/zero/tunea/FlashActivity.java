@@ -1,8 +1,5 @@
 package com.zero.tunea;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -15,6 +12,8 @@ import android.os.Message;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.zero.tunea.service.GetSongs;
 
@@ -29,6 +28,7 @@ public class FlashActivity extends Activity {
     TextView tv;
     LinearLayout ll;
 
+    //Stay for 3 second on flashScreen
     int timeOut = 3000;
     int animeTime = timeOut - 500;
 
@@ -54,6 +54,7 @@ public class FlashActivity extends Activity {
         iv = findViewById(R.id.imageViewFlash);
         tv = findViewById(R.id.textViewFlash);
         ll = findViewById(R.id.textHide);
+
         ObjectAnimator oaImage = new ObjectAnimator(),
                         oaImage2 = new ObjectAnimator(),
                         oaText = new ObjectAnimator();
