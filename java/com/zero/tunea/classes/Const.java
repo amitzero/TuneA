@@ -21,13 +21,15 @@ public class Const {
     //public static final int FRAG_PLAYLIST = 1;
     //public static final int FRAG_ALL = 2;
     //public static final int FRAG_ARTIST = 3;
-    //public static final int FRAG_ALBUM = 4;
-    //public static final int FRAG_GENRE = 5;
-    //public static final int FRAG_FOLDER = 6;
+    public static final int ADD_ITEM_TO_PLAYLIST = 4;
+    public static final int ADD_ITEM_TO_FAVORITE = 5;
+    public static final int DELETE_ITEM = 6;
     public static final int RESTART_FRAGMENT = 7;
 
     public static boolean PLAY_WHEN_START = false;
-    public static boolean SHOWING_INNER_LIST = false;
+    public static boolean SHOWING_INNER_LIST_ARTIST = false;
+    public static boolean SHOWING_INNER_LIST_ALBUM = false;
+    public static boolean SHOWING_INNER_LIST_GENRE = false;
 
     //public final static String DATABASE_NAME = "song_list.db";
     //public final static String TABLE_NAME = "SONGS_LIST";

@@ -9,18 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -29,12 +17,24 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.tabs.TabLayout;
 import com.zero.tunea.classes.Const;
+import com.zero.tunea.classes.Song;
 import com.zero.tunea.service.GetSongs;
 import com.zero.tunea.service.SongService;
 import com.zero.tunea.ui.main.FragAlbum;
 import com.zero.tunea.ui.main.FragAll;
 import com.zero.tunea.ui.main.FragArtist;
+import com.zero.tunea.ui.main.FragGenre;
 import com.zero.tunea.ui.main.SectionsPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,6 +60,18 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    private void addItemToPlaylist(Song song){
+
+    }
+
+    private void addItemToFavorite(Song song){
+
+    }
+
+    private void deleteItem(Song song){
+
+    }
+
     @SuppressLint("HandlerLeak")
     protected void init(){
         setContentView(R.layout.activity_main);
@@ -74,7 +86,17 @@ public class MainActivity extends AppCompatActivity {
                     case Const.SONG_LIST_EMPTY:
                         FragAll.handler.obtainMessage(command).sendToTarget();
                         break;
-
+                    case Const.ADD_ITEM_TO_PLAYLIST:
+                        addItemToPlaylist((Song)msg.obj);
+                        break;
+                    case Const.ADD_ITEM_TO_FAVORITE:
+                        addItemToFavorite((Song)msg.obj);
+                        break;
+                    case Const.DELETE_ITEM:
+                        deleteItem((Song)msg.obj);
+                        break;
+                    default:
+                        break;
                 }
             }
         };
@@ -177,10 +199,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(viewPager.getCurrentItem() == 2 && FragArtist.handler != null && Const.SHOWING_INNER_LIST){
+        if(viewPager.getCurrentItem() == 2 && FragArtist.handler != null && Const.SHOWING_INNER_LIST_ARTIST){
             FragArtist.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
-        } else if (viewPager.getCurrentItem() == 3 && FragAlbum.handler != null && Const.SHOWING_INNER_LIST){
+        } else if (viewPager.getCurrentItem() == 3 && FragAlbum.handler != null && Const.SHOWING_INNER_LIST_ALBUM){
             FragAlbum.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
+        } else if (viewPager.getCurrentItem() == 4 && FragGenre.handler != null && Const.SHOWING_INNER_LIST_GENRE){
+            FragGenre.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
         } else {
             finishAffinity();
         }

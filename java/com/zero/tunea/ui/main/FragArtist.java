@@ -78,7 +78,7 @@ public class FragArtist extends Fragment {
     }
 
     private void setArtistView(){
-        Const.SHOWING_INNER_LIST = false;
+        Const.SHOWING_INNER_LIST_ARTIST = false;
         artistArt.setVisibility(View.GONE);
         BaseAdapter adapter = new BaseAdapter() {
             @Override
@@ -155,14 +155,14 @@ public class FragArtist extends Fragment {
         listView.setAdapter(adapter);
     }
 
+    @SuppressWarnings("deprecation")
     private  void  setSongView(int index){
 
-        Const.SHOWING_INNER_LIST = true;
+        Const.SHOWING_INNER_LIST_ARTIST = true;
         artistArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
-        @SuppressLint("InlinedApi")
         String[] columns = {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ARTIST,
@@ -172,7 +172,6 @@ public class FragArtist extends Fragment {
                 MediaStore.Audio.Media.ALBUM_ID,
         };
 
-        @SuppressLint("InlinedApi")
         Cursor c = context.getContentResolver().query(uri, columns, MediaStore.Audio.Media.ARTIST + "='" + list.get(index)[0] +"'", null, null);
         assert c != null;
         c.moveToLast();
@@ -180,11 +179,8 @@ public class FragArtist extends Fragment {
             Song songData = new Song();
 
             String title = c.getString(c.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            @SuppressLint("InlinedApi")
             String artist = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            @SuppressLint("InlinedApi")
             String album = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-            @SuppressLint("InlinedApi")
             long duration = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.DURATION));
             String data = c.getString(c.getColumnIndex(MediaStore.Audio.Media.DATA));
             long albumId = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));

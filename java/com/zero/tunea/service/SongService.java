@@ -67,6 +67,9 @@ public class SongService extends Service {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 switch (msg.what) {
+                    case Const.PLAY:
+                        play();
+                        break;
                     case Const.SONG_CHANGED:
                         songChange();
                         break;
@@ -99,11 +102,15 @@ public class SongService extends Service {
     @SuppressLint("NewApi")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(Const.PLAY_WHEN_START) play();
+        return START_STICKY;
+    }
+
+    private void play(){
         if (currentVersionSupportLockScreenControls) RegisterRemoteClient();
         initMedia();
 //        newNotification();
         notification();
-        return START_STICKY;
     }
 
     public void initMedia(){

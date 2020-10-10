@@ -82,7 +82,7 @@ public class FragAlbum extends Fragment {
 
 
     private void setAlbumView(){
-        Const.SHOWING_INNER_LIST = false;
+        Const.SHOWING_INNER_LIST_ALBUM = false;
         artistArt.setVisibility(View.GONE);
         BaseAdapter adapter = new BaseAdapter() {
             @Override
@@ -162,7 +162,7 @@ public class FragAlbum extends Fragment {
 
     private  void  setSongView(int index){
         index_old = index;
-        Const.SHOWING_INNER_LIST = true;
+        Const.SHOWING_INNER_LIST_ALBUM = true;
         artistArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;

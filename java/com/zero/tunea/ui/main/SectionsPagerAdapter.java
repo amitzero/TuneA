@@ -26,6 +26,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2, R.string.tab_text_3, R.string.tab_text_4, R.string.tab_text_5, R.string.tab_text_6};
     private final Context context;
 
+    @SuppressWarnings("deprecation")
     @SuppressLint("HandlerLeak")
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -38,6 +39,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         };
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {
@@ -66,6 +68,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 2 total pages.
-        return TAB_TITLES.length;
+        return TAB_TITLES.length-1;
     }
 }
