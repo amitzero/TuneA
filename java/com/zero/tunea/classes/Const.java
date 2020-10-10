@@ -40,6 +40,11 @@ public class Const {
     public static final String DURATION = "DURATION";
     public static final String IMAGE = "IMAGE";
 
+    public static final String ACTION_PLAY = "zero.tunea.play";
+    public static final String ACTION_PLAY_PAUSE = "zero.tunea.play_pause";
+    public static final String ACTION_PREVIOUS = "zero.tunea.previous";
+    public static final String ACTION_NEXT = "zero.tunea.next";
+
     public static Database database = null;
 
     public static final int SONG_LIST_CHANGE = 8;

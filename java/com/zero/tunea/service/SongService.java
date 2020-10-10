@@ -7,17 +7,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.ResultReceiver;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
@@ -103,44 +106,6 @@ public class SongService extends Service {
         return START_STICKY;
     }
 
-    private String CHANNEL_ID = "MY_CHANNEL";
-
-    private void createChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "KOD Dev", NotificationManager.IMPORTANCE_LOW);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null){
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-    }
-
-    private void notification(){
-        createChannel();
-        PendingIntent intent = PendingIntent.getBroadcast(getApplicationContext(), 1, new Intent("PLAY"), PendingIntent.FLAG_UPDATE_CURRENT);
-        //show notification for only first time
-        Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_music_small_icon)
-                .setContentTitle(Const.getCurrentSong().title)
-                .setContentText(Const.getCurrentSong().artist)
-                .setLargeIcon(BitmapFactory.decodeByteArray(Const.getCurrentSong().image, 0, Const.getCurrentSong().image.length))
-                .setOnlyAlertOnce(true)//show notification for only first time
-                .setShowWhen(false)
-                .addAction(0, "Previous", intent)
-                .addAction(androidx.appcompat.R.drawable.abc_btn_check_material, "Play", intent)
-                .addAction(R.drawable.ic_music_small_icon, "Next", intent)
-                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(0, 1, 2)
-                        .setMediaSession(new MediaSessionCompat(getApplicationContext(), "MY_NOTIFICATION").getSessionToken()))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .build();
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
-        notificationManagerCompat.notify(1, notification);
-    }
-
     public void initMedia(){
         mediaPlayer = new MediaPlayerCustom(getApplicationContext());
         mediaPlayer.setPlayList(Const.CURRENT_SONGS_LIST);
@@ -191,11 +156,115 @@ public class SongService extends Service {
         mediaPlayer.play(Const.CURRENT_SONG_NUMBER);
     }
 
+    private String CHANNEL_ID = "MY_CHANNEL";
+    private void createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    "TuneA", NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null){
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private void notification(){
+        Context context = getApplicationContext();
+        Song song = Const.getCurrentSong();
+
+        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "MY_NOTIFICATION");
+        mediaSessionCompat.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onCommand(String command, Bundle extras, ResultReceiver cb) {
+                super.onCommand(command, extras, cb);
+            }
+
+            @Override
+            public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+                return super.onMediaButtonEvent(mediaButtonEvent);
+            }
+
+            @Override
+            public void onPlay() {
+                super.onPlay();
+            }
+
+            @Override
+            public void onPause() {
+                super.onPause();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                super.onSkipToNext();
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                super.onSkipToPrevious();
+            }
+
+            @Override
+            public void onStop() {
+                super.onStop();
+            }
+
+            @Override
+            public void onSeekTo(long pos) {
+                super.onSeekTo(pos);
+            }
+        });
+        mediaSessionCompat.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                        | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSessionCompat.setActive(true);
+
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, song.title)
+                .build();
+        mediaSessionCompat.setMetadata(metadata);
+//        mediaSessionCompat.setPlaybackState(PlaybackStateCompat.fromPlaybackState(PlaybackStateCompat.STATE_PLAYING));
+
+        createChannel();
+        PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(context, 1,
+                new Intent(context,NotificationReceiver.class).setAction(Const.ACTION_PREVIOUS),
+                PendingIntent.FLAG_UPDATE_CURRENT);createChannel();
+        PendingIntent pendingIntentPlayPause = PendingIntent.getBroadcast(context, 1,
+                new Intent(context,NotificationReceiver.class).setAction(Const.ACTION_PLAY_PAUSE),
+                PendingIntent.FLAG_UPDATE_CURRENT);createChannel();
+        PendingIntent pendingIntentNext = PendingIntent.getBroadcast(context, 1,
+                new Intent(context,NotificationReceiver.class).setAction(Const.ACTION_NEXT),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //show notification for only first time
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_music_small_icon)
+                .setContentTitle(song.title)
+                .setContentText(song.artist+" - "+song.album)
+                .setLargeIcon(BitmapFactory.decodeByteArray(Const.getCurrentSong().image, 0, Const.getCurrentSong().image.length))
+                .setOnlyAlertOnce(true)//show notification for only first time
+                .setShowWhen(false)
+                .addAction(R.drawable.play_prev, "Previous", pendingIntentPrev)
+                .addAction(R.drawable.play, "Play", pendingIntentPlayPause)
+                .addAction(R.drawable.play_next, "Next", pendingIntentNext)
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                        .setShowActionsInCompactView(0, 1, 2)
+                        .setMediaSession(mediaSessionCompat.getSessionToken())
+                )
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        notificationManagerCompat.notify(1, notification);
+    }
+
     @SuppressLint("NewApi")
     private void newNotification() {
         Song song = Const.getCurrentSong();
-        String songName = song.title;
-        String albumName = song.album;
 
         RemoteViews simpleContentView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.custom_notification);
         RemoteViews expandedView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.big_notification);
@@ -204,8 +273,9 @@ public class SongService extends Service {
         PendingIntent pm = PendingIntent.getActivity(this, 0, m, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        NotificationChannel notificationChannel = new NotificationChannel("68","68", NotificationManager.IMPORTANCE_HIGH);
-        notificationChannel.setLightColor(Color.BLUE);
+        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+                "TuneA", NotificationManager.IMPORTANCE_HIGH);
+
         notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         assert notificationManager != null;
@@ -216,7 +286,7 @@ public class SongService extends Service {
                 .setSmallIcon(R.drawable.ic_music_small_icon)
                 .setContentIntent(pm)
                 .setCategory(Notification.CATEGORY_SERVICE)
-                .setContentTitle(songName).build();
+                .setContentTitle(song.title).build();
 
         setNotificationListeners(simpleContentView);
         setNotificationListeners(expandedView);
@@ -256,15 +326,14 @@ public class SongService extends Service {
             }
         }
 
-        notification.contentView.setTextViewText(R.id.textSongName, songName);
-        notification.contentView.setTextViewText(R.id.textAlbumName, albumName);
+        notification.contentView.setTextViewText(R.id.textSongName, song.title);
+        notification.contentView.setTextViewText(R.id.textAlbumName, song.artist+" - "+song.album);
         if (currentVersionSupportBigNotification) {
-            notification.bigContentView.setTextViewText(R.id.textSongName, songName);
-            notification.bigContentView.setTextViewText(R.id.textAlbumName, albumName);
+            notification.bigContentView.setTextViewText(R.id.textSongName, song.title);
+            notification.bigContentView.setTextViewText(R.id.textAlbumName, song.artist+" - "+song.album);
         }
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        int NOTIFICATION_ID = 68;
-        startForeground(NOTIFICATION_ID, notification);
+        startForeground(1, notification);
     }
 
     public void setNotificationListeners(RemoteViews view) {
