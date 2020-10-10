@@ -26,6 +26,7 @@ public class Const {
     //public static final int FRAG_FOLDER = 6;
     public static final int RESTART_FRAGMENT = 7;
 
+    public static boolean PLAY_WHEN_START = false;
     public static boolean SHOWING_INNER_LIST = false;
 
     //public final static String DATABASE_NAME = "song_list.db";

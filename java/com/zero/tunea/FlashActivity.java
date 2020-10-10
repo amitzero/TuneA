@@ -29,12 +29,13 @@ public class FlashActivity extends Activity {
     LinearLayout ll;
 
     //Stay for 3 second on flashScreen
-    int timeOut = 3000;
-    int animeTime = timeOut - 500;
+    int timeOut = 2500;
+    int animTime = timeOut - 500;
 
     @SuppressLint({"HandlerLeak", "NewApi"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //noinspection deprecation
         handler = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
@@ -62,17 +63,17 @@ public class FlashActivity extends Activity {
         float ivY = iv.getY();
         oaImage.setPropertyName("translationY");
         oaImage.setFloatValues(-600, ivY);
-        oaImage.setDuration(animeTime);
+        oaImage.setDuration(animTime);
         oaImage.start();
         oaImage2.setTarget(iv);
         oaImage2.setPropertyName("alpha");
         oaImage2.setFloatValues(0, 1);
-        oaImage2.setDuration(animeTime);
+        oaImage2.setDuration(animTime);
         oaImage2.start();
         oaText.setTarget(tv);
         oaText.setPropertyName("translationX");
         oaText.setFloatValues(-200, tv.getX());
-        oaText.setDuration(animeTime-200);
+        oaText.setDuration(animTime -200);
         oaText.start();
         new Timer().schedule(new TimerTask() {
             @Override
