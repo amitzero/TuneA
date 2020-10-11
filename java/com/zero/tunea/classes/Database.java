@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+
 public class Database extends SQLiteOpenHelper
 {
 
@@ -134,5 +136,10 @@ public class Database extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         int result = db.delete(playlist, ID + "='" + String.valueOf(songID) + "'", null);
         return  result;
+    }
+
+    public ArrayList<String[]> getAllPlaylist(){
+        ArrayList<String[]> list = new ArrayList<>();
+        return list;
     }
 }

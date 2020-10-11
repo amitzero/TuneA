@@ -4,8 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +16,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +44,8 @@ import com.zero.tunea.ui.main.FragAll;
 import com.zero.tunea.ui.main.FragArtist;
 import com.zero.tunea.ui.main.FragGenre;
 import com.zero.tunea.ui.main.SectionsPagerAdapter;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +71,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addItemToPlaylist(Song song){
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        ListView listView = new ListView(this);
+        listView.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return 5;
+            }
 
+            @Override
+            public String getItem(int position) {
+                return "null:"+position;
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView tv = new TextView(getApplicationContext());
+                tv.setText(getItem(position));
+                return tv;
+            }
+        });
+        dialog.setCancelable(true);
+        dialog.setContentView(listView);
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
     }
 
     private void addItemToFavorite(Song song){

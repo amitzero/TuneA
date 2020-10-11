@@ -180,7 +180,7 @@ public class FragGenre extends Fragment {
         Cursor c = context.getContentResolver().query(uri, columns, null, null, null);
         assert c != null;
         if(!c.moveToFirst()){
-            Toast.makeText(getContext(),"No Data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"No Data", Toast.LENGTH_SHORT).show();
         }else {
             do {
                 String name = c.getString(c.getColumnIndex(MediaStore.Audio.Genres.NAME));
