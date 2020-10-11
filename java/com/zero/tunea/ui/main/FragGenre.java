@@ -3,7 +3,6 @@ package com.zero.tunea.ui.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +11,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -41,6 +39,11 @@ public class FragGenre extends Fragment {
     ArrayList<String[]> list = null;
 
     private  int index_old = 0;
+
+    public  FragGenre(Context context){
+        this.context = context;
+        list = getGenre();
+    }
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -154,8 +157,11 @@ public class FragGenre extends Fragment {
         Const.SHOWING_INNER_LIST_GENRE = true;
         genreArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
+
+        /*
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
+        @SuppressWarnings("deprecation")
         @SuppressLint("InlinedApi")
         String[] columns = {
                 MediaStore.Audio.Media.TITLE,
@@ -206,14 +212,14 @@ public class FragGenre extends Fragment {
         }
         while (c.moveToPrevious());
         c.close();
-        listView.setAdapter(new Adapter(getContext(), songsOfArtist));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int index, long id) {
-                Toast.makeText(context, ""+index, Toast.LENGTH_SHORT).show();
-            }
-        });
+        */
 
+        for(Song s : Const.CURRENT_SONGS_LIST){
+            if(s.genre != null && s.genre.equalsIgnoreCase(list.get(index)[0])) songsOfArtist.add(s);
+        }
+
+        listView.setAdapter(new Adapter(getContext(), songsOfArtist));
+        listView.setOnItemClickListener((adapterView, view, index1, id) -> Toast.makeText(context, ""+ index1, Toast.LENGTH_SHORT).show());
     }
 
     private ArrayList<String[]> getGenre(){
@@ -223,11 +229,9 @@ public class FragGenre extends Fragment {
         final String[] columns = {
                 MediaStore.Audio.Genres._ID,
                 MediaStore.Audio.Genres.NAME,
-                MediaStore.Audio.Genres._COUNT
+                //MediaStore.Audio.Genres._COUNT
         };
 
-        Context context = getContext();
-        assert  context != null;
         Cursor c = context.getContentResolver().query(uri, columns, null, null, null);
         assert c != null;
         if(!c.moveToFirst()){
@@ -235,7 +239,7 @@ public class FragGenre extends Fragment {
         }else {
             do {
                 String name = c.getString(c.getColumnIndex(MediaStore.Audio.Genres.NAME));
-                String song = c.getString(c.getColumnIndex(MediaStore.Audio.Genres._COUNT));
+                String song = " ";//c.getString(c.getColumnIndex(MediaStore.Audio.Genres._COUNT));
                 //Toast.makeText(getContext(),""+c.getColumnCount()+name, Toast.LENGTH_SHORT).show();
                 list.add(new String[]{name, song});//+"\nType:"+albums);
             }

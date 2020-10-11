@@ -52,7 +52,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 3:
                 return new FragAlbum(context);
             case 4:
-                return new FragGenre();
+                return new FragGenre(context);
             case 5:
                 return new FragFolder();
         }
