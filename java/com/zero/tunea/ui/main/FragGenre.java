@@ -28,6 +28,7 @@ import com.zero.tunea.classes.Song;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("ALL")
 public class FragGenre extends Fragment {
 
     public static Handler handler;
@@ -36,7 +37,7 @@ public class FragGenre extends Fragment {
     private ListView listView;
     private ImageView genreArt;
 
-    ArrayList<String[]> list = null;
+    ArrayList<String[]> list;
 
     private  int index_old = 0;
 
@@ -109,7 +110,8 @@ public class FragGenre extends Fragment {
                 ImageView artistArt = item.findViewById(R.id.imageView_album_of_song);
                 TextView artistName = item.findViewById(R.id.textView_title_of_song);
                 TextView albumNumber = item.findViewById(R.id.textView_artist_of_song);
-/*
+
+                /*
                 //For Image of Artist
                 Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
@@ -158,62 +160,6 @@ public class FragGenre extends Fragment {
         genreArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
 
-        /*
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-        @SuppressWarnings("deprecation")
-        @SuppressLint("InlinedApi")
-        String[] columns = {
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.ALBUM_ID,
-        };
-
-        @SuppressLint("InlinedApi")
-        String selection = MediaStore.Audio.Media.GENRE +"=\"" + list.get(index)[0] + "\"";
-        Cursor c = context.getContentResolver().query(uri, columns, selection, null, null);
-        assert c != null;
-        c.moveToLast();
-        do {
-            Song songData = new Song();
-
-            String title = c.getString(c.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            @SuppressLint("InlinedApi")
-            String artist = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            @SuppressLint("InlinedApi")
-            String album = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-            @SuppressLint("InlinedApi")
-            long duration = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            String data = c.getString(c.getColumnIndex(MediaStore.Audio.Media.DATA));
-            long albumId = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-
-            MediaMetadataRetriever metaRetriver = new MediaMetadataRetriever();
-            metaRetriver.setDataSource(data);
-            String genre = metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-            byte[] image = null;
-            try {
-                image = metaRetriver.getEmbeddedPicture();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            songData.setTitle(title);
-            songData.setArtist(artist);
-            songData.setAlbum(album);
-            songData.setAlbumId(albumId);
-            songData.setGenre(genre);
-            songData.setPath(data);
-            songData.setDuration(duration);
-            songData.setImageByte(image);
-            songsOfArtist.add(songData);
-        }
-        while (c.moveToPrevious());
-        c.close();
-        */
-
         for(Song s : Const.CURRENT_SONGS_LIST){
             if(s.genre != null && s.genre.equalsIgnoreCase(list.get(index)[0])) songsOfArtist.add(s);
         }
@@ -228,8 +174,7 @@ public class FragGenre extends Fragment {
         Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
         final String[] columns = {
                 MediaStore.Audio.Genres._ID,
-                MediaStore.Audio.Genres.NAME,
-                //MediaStore.Audio.Genres._COUNT
+                MediaStore.Audio.Genres.NAME
         };
 
         Cursor c = context.getContentResolver().query(uri, columns, null, null, null);
@@ -239,9 +184,8 @@ public class FragGenre extends Fragment {
         }else {
             do {
                 String name = c.getString(c.getColumnIndex(MediaStore.Audio.Genres.NAME));
-                String song = " ";//c.getString(c.getColumnIndex(MediaStore.Audio.Genres._COUNT));
-                //Toast.makeText(getContext(),""+c.getColumnCount()+name, Toast.LENGTH_SHORT).show();
-                list.add(new String[]{name, song});//+"\nType:"+albums);
+                String song = " ";
+                list.add(new String[]{name, song});
             }
             while (c.moveToNext());
         }

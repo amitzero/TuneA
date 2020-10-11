@@ -12,7 +12,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,10 +34,9 @@ public class FragArtist extends Fragment {
     public static Handler handler;
     private Context context;
     private ListView listView;
-    private View root;
     private ImageView artistArt;
 
-    ArrayList<String[]> list = null;
+    ArrayList<String[]> list;
 
     public  FragArtist(Context context){
         this.context = context;
@@ -49,6 +47,7 @@ public class FragArtist extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection deprecation
         handler = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
@@ -67,7 +66,8 @@ public class FragArtist extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.list, null);
+        @SuppressLint("InflateParams")
+        View root = inflater.inflate(R.layout.list, null);
         artistArt = root.findViewById(R.id.ArtistOrAlbumArt);
         TextView empty = root.findViewById(R.id.textViewEmpty);
         empty.setVisibility(View.GONE);
@@ -146,12 +146,7 @@ public class FragArtist extends Fragment {
                 return item;
             }
         };
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                setSongView(i);
-            }
-        });
+        listView.setOnItemClickListener((adapterView, view, i, l) -> setSongView(i));
         listView.setAdapter(adapter);
     }
 
@@ -185,12 +180,12 @@ public class FragArtist extends Fragment {
             String data = c.getString(c.getColumnIndex(MediaStore.Audio.Media.DATA));
             long albumId = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
 
-            MediaMetadataRetriever metaRetriver = new MediaMetadataRetriever();
-            metaRetriver.setDataSource(data);
-            String genre = metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+            metaRetriever.setDataSource(data);
+            String genre = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
             byte[] image = null;
             try {
-                image = metaRetriver.getEmbeddedPicture();
+                image = metaRetriever.getEmbeddedPicture();
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -208,12 +203,7 @@ public class FragArtist extends Fragment {
         while (c.moveToPrevious());
         c.close();
         listView.setAdapter(new Adapter(getContext(), songsOfArtist));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int index, long id) {
-                Toast.makeText(context, ""+index, Toast.LENGTH_SHORT).show();
-            }
-        });
+        listView.setOnItemClickListener((adapterView, view, index1, id) -> Toast.makeText(context, ""+ index1, Toast.LENGTH_SHORT).show());
 
     }
 
@@ -233,6 +223,7 @@ public class FragArtist extends Fragment {
         Cursor c = context.getContentResolver().query(uri, columns, null, null, null);
         assert c != null;
         if(!c.moveToFirst()){
+            return null;
         }else {
             do {
                 String name = c.getString(c.getColumnIndex(MediaStore.Audio.Artists.ARTIST));

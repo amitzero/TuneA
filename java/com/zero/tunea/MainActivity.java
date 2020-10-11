@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("HandlerLeak")
     protected void init(){
         setContentView(R.layout.activity_main);
+        //noinspection deprecation
         handler = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
@@ -110,19 +111,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         searchView = findViewById(R.id.search_View);
 
-        findViewById(R.id.imageViewSettings).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        findViewById(R.id.imageViewSettings).setOnClickListener(view -> {
 //                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                findViewById(R.id.player_container).setTranslationZ(10);
-            }
+            findViewById(R.id.player_container).setTranslationZ(10);
         });
-        findViewById(R.id.exit_full_player).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.player_container).setTranslationZ(-10);
-            }
-        });
+        findViewById(R.id.exit_full_player).setOnClickListener(v -> findViewById(R.id.player_container).setTranslationZ(-10));
 
 //        initBottomSheet();
     }
@@ -137,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch(newState){
+                switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
@@ -145,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
                         full_player.setVisibility(View.VISIBLE);
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
                         break;
                 }
             }
