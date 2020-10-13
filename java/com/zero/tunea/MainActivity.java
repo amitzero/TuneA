@@ -15,10 +15,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -73,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
     private void addItemToPlaylist(Song song){
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        ListView listView = new ListView(this);
+        View root = LayoutInflater.from(this).inflate(R.layout.playlist_dialog_view, null);
+        ListView listView = root.findViewById(R.id.dialog_listView);
         listView.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -93,12 +97,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 TextView tv = new TextView(getApplicationContext());
+                tv.setTextSize(18);
+                tv.setGravity(Gravity.CENTER);
                 tv.setText(getItem(position));
                 return tv;
             }
         });
+        EditText editText = root.findViewById(R.id.dialog_editText);
+        TextView textView = root.findViewById(R.id.dialog_textView);
+        textView.setOnClickListener(view ->{
+            listView.setVisibility(View.GONE);
+            editText.setVisibility(View.VISIBLE);
+            view.setOnClickListener(v ->{
+                dialog.dismiss();
+            });
+        });
         dialog.setCancelable(true);
-        dialog.setContentView(listView);
+        dialog.setContentView(root);
 
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();

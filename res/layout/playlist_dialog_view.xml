@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="8dp"
+    android:background="#ffffff"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/dialog_listView"
+        android:layout_width="wrap_content"
+        android:layout_height="442dp"
+        android:layout_margin="8dp"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/dialog_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ddffffff"
+        android:visibility="gone"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:text=""
+        android:autofillHints="Name"
+        android:inputType="text"
+        tools:ignore="LabelFor" />
+
+    <TextView
+        android:id="@+id/dialog_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:text="@string/create_new_playlist" />
+
+</LinearLayout>

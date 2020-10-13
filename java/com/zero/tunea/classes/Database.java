@@ -139,7 +139,17 @@ public class Database extends SQLiteOpenHelper
     }
 
     public ArrayList<String[]> getAllPlaylist(){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + PLAYLISTS_TABLE, null);
         ArrayList<String[]> list = new ArrayList<>();
+        c.moveToFirst();
+        do {
+            String playlistName = c.getString(c.getColumnIndex(PLAYLIST_NAME));
+            String playlistSongCount = c.getString(c.getColumnIndex(PLAYLIST_SONG_COUNT));
+            list.add(new String[]{playlistName, playlistSongCount});
+        } while (c.moveToNext());
+        c.close();
         return list;
     }
 }
