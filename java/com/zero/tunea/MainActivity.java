@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +47,7 @@ import com.zero.tunea.ui.main.FragArtist;
 import com.zero.tunea.ui.main.FragGenre;
 import com.zero.tunea.ui.main.SectionsPagerAdapter;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,42 +73,53 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    @SuppressLint("SetTextI18n")
     private void addItemToPlaylist(Song song){
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         View root = LayoutInflater.from(this).inflate(R.layout.playlist_dialog_view, null);
         ListView listView = root.findViewById(R.id.dialog_listView);
+        ArrayList<String[]> playlists = Const.database.getAllPlaylist();
         listView.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
-                return 5;
+                return playlists.size();
             }
 
             @Override
             public String getItem(int position) {
-                return "null:"+position;
+                return playlists.get(position)[0];
             }
 
             @Override
             public long getItemId(int position) {
-                return 0;
+                return position;
             }
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                TextView tv = new TextView(getApplicationContext());
-                tv.setTextSize(18);
-                tv.setGravity(Gravity.CENTER);
-                tv.setText(getItem(position));
+                View root = LayoutInflater.from(getApplicationContext()).inflate(R.layout.text_view, null);
+                TextView tv = root.findViewById(R.id.textView);
+                tv.setText(playlists.get(position)[0]);
+
+                tv.setOnClickListener(vv->{
+                    Const.database.deletePlaylist(playlists.get(position)[0]);
+                });
+
                 return tv;
             }
         });
         EditText editText = root.findViewById(R.id.dialog_editText);
         TextView textView = root.findViewById(R.id.dialog_textView);
         textView.setOnClickListener(view ->{
+            ((TextView)view).setText("OK");
+            ((TextView)view).setTextColor(Color.GREEN);
             listView.setVisibility(View.GONE);
             editText.setVisibility(View.VISIBLE);
             view.setOnClickListener(v ->{
+                String playlist = editText.getText().toString().trim();
+                Const.database.createPlaylist(playlist);
+                Const.database.addToPlaylist(song.id, playlist);
                 dialog.dismiss();
             });
         });

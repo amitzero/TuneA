@@ -1,10 +1,8 @@
 package com.zero.tunea.classes;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-
 public class Song {
 
+    public int id;
     public String title;
     public String artist;
     public String album;

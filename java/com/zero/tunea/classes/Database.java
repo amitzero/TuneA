@@ -35,17 +35,7 @@ public class Database extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        String query = new StringBuilder().append("CREATE TABLE IF NOT EXISTS ")
-                .append(TABLE_NAME).append(" ( ")
-                .append(ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ")
-                .append(TITLE).append(" TEXT, ")
-                .append(ARTIST).append(" TEXT, ")
-                .append(ALBUM).append(" TEXT, ")
-                .append(ALBUM_ID).append(" LONG, ")
-                .append(GENRE).append(" TEXT, ")
-                .append(PATH).append(" TEXT, ")
-                .append(DURATION).append(" LONG, ")
-                .append(IMAGE).append(" BYTE[]);").toString();
+        String query = new StringBuilder().append("CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME).append(" ( ").append(ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ").append(TITLE).append(" TEXT, ").append(ARTIST).append(" TEXT, ").append(ALBUM).append(" TEXT, ").append(ALBUM_ID).append(" LONG, ").append(GENRE).append(" TEXT, ").append(PATH).append(" TEXT, ").append(DURATION).append(" LONG, ").append(IMAGE).append(" BYTE[]);").toString();
         db.execSQL(query);
         String query2 = "CREATE TABLE IF NOT EXISTS " + PLAYLISTS_TABLE +
                 " ( " + PLAYLIST_NAME + " TEXT, " + PLAYLIST_SONG_COUNT +
@@ -77,8 +67,7 @@ public class Database extends SQLiteOpenHelper
     public Cursor getCursorOfSongs()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-        return res;
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
     }
 
     public boolean isEmptySongs()
@@ -91,15 +80,17 @@ public class Database extends SQLiteOpenHelper
     private ContentValues getSongInfo(int songID){
         ContentValues cv = new ContentValues();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + "WHERE " + ID + "=" + songID, null);
-        cv.put(TITLE, c.getString(c.getColumnIndex(Const.TITLE)));
-        cv.put(ARTIST, c.getString(c.getColumnIndex(Const.ARTIST)));
-        cv.put(ALBUM, c.getString(c.getColumnIndex(Const.ALBUM)));
-        cv.put(ALBUM_ID, c.getLong(c.getColumnIndex(Const.ALBUM_ID)));
-        cv.put(GENRE, c.getString(c.getColumnIndex(Const.GENRE)));
-        cv.put(PATH, c.getString(c.getColumnIndex(Const.PATH)));
-        cv.put(DURATION, c.getLong(c.getColumnIndex(Const.DURATION)));
-        cv.put(IMAGE, c.getBlob(c.getColumnIndex(Const.IMAGE)));
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID + "=" + songID, null);
+        if(c.moveToFirst()){
+            cv.put(TITLE, c.getString(c.getColumnIndex(Const.TITLE)));
+            cv.put(ARTIST, c.getString(c.getColumnIndex(Const.ARTIST)));
+            cv.put(ALBUM, c.getString(c.getColumnIndex(Const.ALBUM)));
+            cv.put(ALBUM_ID, c.getLong(c.getColumnIndex(Const.ALBUM_ID)));
+            cv.put(GENRE, c.getString(c.getColumnIndex(Const.GENRE)));
+            cv.put(PATH, c.getString(c.getColumnIndex(Const.PATH)));
+            cv.put(DURATION, c.getLong(c.getColumnIndex(Const.DURATION)));
+            cv.put(IMAGE, c.getBlob(c.getColumnIndex(Const.IMAGE)));
+        }
         c.close();
         return  cv;
     }
@@ -110,11 +101,11 @@ public class Database extends SQLiteOpenHelper
         cv.put(PLAYLIST_NAME, playlistName);
         cv.put(PLAYLIST_SONG_COUNT, 0);
         if(db.insert(PLAYLISTS_TABLE, null, cv) > 0){
-            String query = new StringBuilder().append("CREATE TABLE IF NOT EXISTS ").append(playlistName)
-                    .append(" ( ").append(ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ").append(TITLE)
-                    .append(" TEXT, ").append(ARTIST).append(" TEXT, ").append(ALBUM).append(" TEXT, ")
-                    .append(ALBUM_ID).append(" LONG, ").append(GENRE).append(" TEXT, ").append(PATH)
-                    .append(" TEXT, ").append(DURATION).append(" LONG, ").append(IMAGE).append(" BYTE[]);").toString();
+            String query = "CREATE TABLE IF NOT EXISTS " + playlistName +
+                    " ( " + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TITLE +
+                    " TEXT, " + ARTIST + " TEXT, " + ALBUM + " TEXT, " +
+                    ALBUM_ID + " LONG, " + GENRE + " TEXT, " + PATH +
+                    " TEXT, " + DURATION + " LONG, " + IMAGE + " BYTE[]);";
             db.execSQL(query);
         }
     }
@@ -122,20 +113,17 @@ public class Database extends SQLiteOpenHelper
     public int deletePlaylist(String playlistName){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + playlistName);
-        int result = db.delete(PLAYLISTS_TABLE, PLAYLIST_NAME + "='" + playlistName + "'", new String[]{PLAYLIST_NAME, PLAYLIST_SONG_COUNT});
-        return result;
+        return db.delete(PLAYLISTS_TABLE, PLAYLIST_NAME + "='" + playlistName + "'", null);
     }
 
     public long addToPlaylist(int songID, String playlist){
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.insert(playlist, null, getSongInfo(songID));
-        return result;
+        return db.insert(playlist, null, getSongInfo(songID));
     }
 
     public int deleteFromPlaylist(int songID, String playlist){
         SQLiteDatabase db = this.getWritableDatabase();
-        int result = db.delete(playlist, ID + "='" + String.valueOf(songID) + "'", null);
-        return  result;
+        return db.delete(playlist, ID + "='" + songID + "'", null);
     }
 
     public ArrayList<String[]> getAllPlaylist(){
@@ -143,7 +131,7 @@ public class Database extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM " + PLAYLISTS_TABLE, null);
         ArrayList<String[]> list = new ArrayList<>();
-        c.moveToFirst();
+        if(c.moveToFirst())
         do {
             String playlistName = c.getString(c.getColumnIndex(PLAYLIST_NAME));
             String playlistSongCount = c.getString(c.getColumnIndex(PLAYLIST_SONG_COUNT));

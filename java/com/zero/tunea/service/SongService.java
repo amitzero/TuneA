@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
+import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -175,7 +176,7 @@ public class SongService extends Service {
             }
         }
     }
-
+    @SuppressLint("NewApi")
     private void notification(){
         Context context = getApplicationContext();
         Song song = Const.getCurrentSong();
@@ -263,10 +264,24 @@ public class SongService extends Service {
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .build();
 
+        RemoteViews expandedView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.custom_notification);
+        Notification noti = new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_music_small_icon)
+                .setLargeIcon(BitmapFactory.decodeByteArray(Const.getCurrentSong().image, 0, Const.getCurrentSong().image.length))
+                .setCustomContentView(expandedView)
+                .addAction(R.drawable.play_prev, "Previous", pendingIntentPrev)
+                .addAction(R.drawable.play, "Play", pendingIntentPlayPause)
+                .addAction(R.drawable.play_next, "Next", pendingIntentNext)
+                .setStyle(new Notification.DecoratedMediaCustomViewStyle()
+//                        .setShowActionsInCompactView(0, 1, 2)
+                    .setMediaSession(new MediaSession(getApplicationContext(),"TAG").getSessionToken())
+                )
+                .build();
+
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
-        notificationManagerCompat.notify(1, notification);
+        notificationManagerCompat.notify(1, noti);
     }
 
     @SuppressLint("NewApi")

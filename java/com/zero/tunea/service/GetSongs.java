@@ -168,6 +168,7 @@ public class GetSongs extends IntentService {
         c.moveToFirst();
         do {
             Song songData = new Song();
+            int id = c.getInt(c.getColumnIndex(Const.ID));
             String title = c.getString(c.getColumnIndex(Const.TITLE));
             String artist = c.getString(c.getColumnIndex(Const.ARTIST));
             String album = c.getString(c.getColumnIndex(Const.ALBUM));
@@ -177,6 +178,7 @@ public class GetSongs extends IntentService {
             long duration = c.getLong(c.getColumnIndex(Const.DURATION));
             byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
 
+            songData.id = id;
             songData.setTitle(title);
             songData.setArtist(artist);
             songData.setAlbum(album);

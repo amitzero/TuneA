@@ -33,7 +33,7 @@ public class Const {
 
     //public final static String DATABASE_NAME = "song_list.db";
     //public final static String TABLE_NAME = "SONGS_LIST";
-    //public static final String ID = "ID";
+    public static final String ID = "ID";
     public static final String TITLE = "TITLE";
     public static final String ARTIST = "ARTIST";
     public static final String ALBUM = "ALBUM";
