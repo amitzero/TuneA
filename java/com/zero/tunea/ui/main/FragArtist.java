@@ -3,7 +3,7 @@ package com.zero.tunea.ui.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -156,52 +156,17 @@ public class FragArtist extends Fragment {
         Const.SHOWING_INNER_LIST_ARTIST = true;
         artistArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-        String[] columns = {
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.ALBUM_ID,
-        };
-
-        Cursor c = context.getContentResolver().query(uri, columns, MediaStore.Audio.Media.ARTIST + "='" + list.get(index)[0] +"'", null, null);
-        assert c != null;
-        c.moveToLast();
-        do {
-            Song songData = new Song();
-
-            String title = c.getString(c.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            String artist = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            String album = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-            long duration = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            String data = c.getString(c.getColumnIndex(MediaStore.Audio.Media.DATA));
-            long albumId = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-
-            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
-            metaRetriever.setDataSource(data);
-            String genre = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-            byte[] image = null;
-            try {
-                image = metaRetriever.getEmbeddedPicture();
-            } catch (Exception e){
-                e.printStackTrace();
+        boolean artistArtNotAdded = true;
+        for(Song song : Const.ALL_SONGS_LIST){
+            if(song.artist != null && song.artist.equalsIgnoreCase(list.get(index)[0])) {
+                songsOfArtist.add(song);
+                if(artistArtNotAdded && song.image != null){
+                    artistArt.setImageBitmap(BitmapFactory.decodeByteArray(song.image, 0, song.image.length));
+                    artistArtNotAdded = false;
+                }
             }
-
-            songData.setTitle(title);
-            songData.setArtist(artist);
-            songData.setAlbum(album);
-            songData.setAlbumId(albumId);
-            songData.setGenre(genre);
-            songData.setPath(data);
-            songData.setDuration(duration);
-            songData.setImageByte(image);
-            songsOfArtist.add(songData);
         }
-        while (c.moveToPrevious());
-        c.close();
+
         listView.setAdapter(new Adapter(getContext(), songsOfArtist));
         listView.setOnItemClickListener((adapterView, view, index1, id) -> Toast.makeText(context, ""+ index1, Toast.LENGTH_SHORT).show());
 
@@ -212,10 +177,7 @@ public class FragArtist extends Fragment {
         ArrayList<String[]> list = new ArrayList<>();
         Uri uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
         final String[] columns = {
-               // MediaStore.Audio.Artists._ID,
-               // MediaStore.Audio.Artists.ARTIST_KEY,
                 MediaStore.Audio.Artists.ARTIST,
-               // MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
                 MediaStore.Audio.Artists.NUMBER_OF_TRACKS
         };
 

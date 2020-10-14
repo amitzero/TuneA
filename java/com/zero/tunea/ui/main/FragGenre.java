@@ -3,6 +3,7 @@ package com.zero.tunea.ui.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,10 +72,12 @@ public class FragGenre extends Fragment {
         View root = inflater.inflate(R.layout.list, null);
         genreArt = root.findViewById(R.id.ArtistOrAlbumArt);
         TextView empty = root.findViewById(R.id.textViewEmpty);
-        empty.setVisibility(View.GONE);
-        listView = root.findViewById(R.id.list);
-        listView.setVisibility(View.VISIBLE);
-        setGenreView();
+        if(list.size() > 0) {
+            empty.setVisibility(View.GONE);
+            listView = root.findViewById(R.id.list);
+            listView.setVisibility(View.VISIBLE);
+            setGenreView();
+        }
         return root;
     }
 
@@ -159,11 +162,16 @@ public class FragGenre extends Fragment {
         Const.SHOWING_INNER_LIST_GENRE = true;
         genreArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
-
-        for(Song s : Const.CURRENT_SONGS_LIST){
-            if(s.genre != null && s.genre.equalsIgnoreCase(list.get(index)[0])) songsOfArtist.add(s);
+        boolean artistArtNotAdded = true;
+        for(Song song : Const.ALL_SONGS_LIST){
+            if(song.genre != null && song.genre.equalsIgnoreCase(list.get(index)[0])) {
+                songsOfArtist.add(song);
+                if(artistArtNotAdded && song.image != null){
+                    genreArt.setImageBitmap(BitmapFactory.decodeByteArray(song.image, 0, song.image.length));
+                    artistArtNotAdded = false;
+                }
+            }
         }
-
         listView.setAdapter(new Adapter(getContext(), songsOfArtist));
         listView.setOnItemClickListener((adapterView, view, index1, id) -> Toast.makeText(context, ""+ index1, Toast.LENGTH_SHORT).show());
     }

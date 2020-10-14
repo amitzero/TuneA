@@ -118,11 +118,25 @@ public class Database extends SQLiteOpenHelper
 
     public long addToPlaylist(int songID, String playlist){
         SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.query(PLAYLISTS_TABLE, new String[]{PLAYLIST_SONG_COUNT}, PLAYLIST_NAME + "='" + playlist + "'", null, null, null, null);
+        int songs = 0;
+        if(c.moveToFirst()){
+            songs = Integer.parseInt(c.getString(c.getColumnIndex(PLAYLIST_SONG_COUNT))) + 1;
+        }
+        String query = "UPDATE "+ PLAYLISTS_TABLE + " SET " + PLAYLIST_SONG_COUNT + "='" + songs + "' WHERE " + PLAYLIST_NAME + "='" + playlist + "';";
+        db.execSQL(query);
         return db.insert(playlist, null, getSongInfo(songID));
     }
 
     public int deleteFromPlaylist(int songID, String playlist){
         SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.query(PLAYLISTS_TABLE, new String[]{PLAYLIST_SONG_COUNT}, PLAYLIST_NAME + "='" + playlist + "'", null, null, null, null);
+        int songs = 0;
+        if(c.moveToFirst()){
+            songs = Integer.parseInt(c.getString(c.getColumnIndex(PLAYLIST_SONG_COUNT))) - 1;
+        }
+        String query = "UPDATE "+ PLAYLISTS_TABLE + " SET " + PLAYLIST_SONG_COUNT + "='" + songs + "' WHERE " + PLAYLIST_NAME + "='" + playlist + "';";
+        db.execSQL(query);
         return db.delete(playlist, ID + "='" + songID + "'", null);
     }
 
@@ -137,6 +151,39 @@ public class Database extends SQLiteOpenHelper
             String playlistSongCount = c.getString(c.getColumnIndex(PLAYLIST_SONG_COUNT));
             list.add(new String[]{playlistName, playlistSongCount});
         } while (c.moveToNext());
+        c.close();
+        return list;
+    }
+    public ArrayList<Song> getSongsOfPlaylist(String playlist){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + playlist, null);
+        ArrayList<Song> list = new ArrayList<>();
+        if(c.moveToFirst()) {
+            do {
+                Song songData = new Song();
+                int id = c.getInt(c.getColumnIndex(Const.ID));
+                String title = c.getString(c.getColumnIndex(Const.TITLE));
+                String artist = c.getString(c.getColumnIndex(Const.ARTIST));
+                String album = c.getString(c.getColumnIndex(Const.ALBUM));
+                long album_id = c.getLong(c.getColumnIndex(Const.ALBUM_ID));
+                String genre = c.getString(c.getColumnIndex(Const.GENRE));
+                String path = c.getString(c.getColumnIndex(Const.PATH));
+                long duration = c.getLong(c.getColumnIndex(Const.DURATION));
+                byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
+
+                songData.id = id;
+                songData.setTitle(title);
+                songData.setArtist(artist);
+                songData.setAlbum(album);
+                songData.setAlbumId(album_id);
+                songData.setGenre(genre);
+                songData.setPath(path);
+                songData.setDuration(duration);
+                songData.setImageByte(image);
+                list.add(songData);
+            } while (c.moveToNext());
+        }
         c.close();
         return list;
     }

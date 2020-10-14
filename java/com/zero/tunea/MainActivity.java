@@ -45,6 +45,7 @@ import com.zero.tunea.ui.main.FragAlbum;
 import com.zero.tunea.ui.main.FragAll;
 import com.zero.tunea.ui.main.FragArtist;
 import com.zero.tunea.ui.main.FragGenre;
+import com.zero.tunea.ui.main.FragPlaylist;
 import com.zero.tunea.ui.main.SectionsPagerAdapter;
 
 import java.util.ArrayList;
@@ -98,16 +99,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
+                @SuppressLint("ViewHolder")
                 View root = LayoutInflater.from(getApplicationContext()).inflate(R.layout.text_view, null);
                 TextView tv = root.findViewById(R.id.textView);
                 tv.setText(playlists.get(position)[0]);
-
-                tv.setOnClickListener(vv->{
-                    Const.database.deletePlaylist(playlists.get(position)[0]);
-                });
-
                 return tv;
             }
+        });
+        listView.setOnItemClickListener((adapterView, view, j, id) ->{
+            Const.database.addToPlaylist(song.id, playlists.get(j)[0]);
+            FragPlaylist.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
+            dialog.dismiss();
         });
         EditText editText = root.findViewById(R.id.dialog_editText);
         TextView textView = root.findViewById(R.id.dialog_textView);
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 String playlist = editText.getText().toString().trim();
                 Const.database.createPlaylist(playlist);
                 Const.database.addToPlaylist(song.id, playlist);
+                FragPlaylist.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
                 dialog.dismiss();
             });
         });
@@ -264,7 +267,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(viewPager.getCurrentItem() == 2 && FragArtist.handler != null && Const.SHOWING_INNER_LIST_ARTIST){
+        if(viewPager.getCurrentItem() == 0 && FragPlaylist.handler != null && Const.SHOWING_INNER_LIST_PLAYLIST){
+            FragPlaylist.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
+        } else if (viewPager.getCurrentItem() == 2 && FragArtist.handler != null && Const.SHOWING_INNER_LIST_ARTIST){
             FragArtist.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();
         } else if (viewPager.getCurrentItem() == 3 && FragAlbum.handler != null && Const.SHOWING_INNER_LIST_ALBUM){
             FragAlbum.handler.obtainMessage(Const.RESTART_FRAGMENT).sendToTarget();

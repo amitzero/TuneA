@@ -116,7 +116,7 @@ public class SongService extends Service {
 
     public void initMedia(){
         mediaPlayer = new MediaPlayerCustom(getApplicationContext());
-        mediaPlayer.setPlayList(Const.CURRENT_SONGS_LIST);
+        mediaPlayer.setPlayList(Const.ALL_SONGS_LIST);
         mediaPlayer.setMediaPlayerListener(new MediaPlayerCustom.MediaPlayerListener() {
 
             @Override

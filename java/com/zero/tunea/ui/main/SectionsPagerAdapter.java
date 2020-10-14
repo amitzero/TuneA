@@ -44,7 +44,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new FragPlaylist();
+                return new FragPlaylist(context);
             case 1:
                 return new FragAll(context);
             case 2:

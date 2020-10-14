@@ -27,6 +27,7 @@ public class Const {
     public static final int RESTART_FRAGMENT = 7;
 
     public static boolean PLAY_WHEN_START = false;
+    public static boolean SHOWING_INNER_LIST_PLAYLIST = false;
     public static boolean SHOWING_INNER_LIST_ARTIST = false;
     public static boolean SHOWING_INNER_LIST_ALBUM = false;
     public static boolean SHOWING_INNER_LIST_GENRE = false;
@@ -53,8 +54,8 @@ public class Const {
     public static final int SONG_LIST_CHANGE = 8;
     public static final int SONG_LIST_EMPTY = 9;
 
-    public static ArrayList<Song> ALL_SONGS_LIST = new ArrayList<>();
     public static ArrayList<Song> CURRENT_SONGS_LIST = new ArrayList<>();
+    public static ArrayList<Song> ALL_SONGS_LIST = new ArrayList<>();
     public static int CURRENT_SONG_NUMBER = 0;
     public static boolean SONG_PAUSED = true;
     public static final int SONG_CHANGED = 10;
@@ -108,22 +109,22 @@ public class Const {
     }
 
     public static Song getCurrentSong(){
-        return CURRENT_SONGS_LIST.get(CURRENT_SONG_NUMBER);
+        return ALL_SONGS_LIST.get(CURRENT_SONG_NUMBER);
     }
 
     public static void next(){
-        if(CURRENT_SONGS_LIST == null || CURRENT_SONGS_LIST.size() > 2) return;
-        CURRENT_SONG_NUMBER = CURRENT_SONG_NUMBER == CURRENT_SONGS_LIST.size() - 1 ? 0 : CURRENT_SONG_NUMBER++;
+        if(ALL_SONGS_LIST == null || ALL_SONGS_LIST.size() > 2) return;
+        CURRENT_SONG_NUMBER = CURRENT_SONG_NUMBER == ALL_SONGS_LIST.size() - 1 ? 0 : CURRENT_SONG_NUMBER++;
     }
 
     public static  void previous(){
-        if(CURRENT_SONGS_LIST == null || CURRENT_SONGS_LIST.size() > 2) return;
-        CURRENT_SONG_NUMBER = CURRENT_SONG_NUMBER == 0 ? CURRENT_SONGS_LIST.size() - 1 : CURRENT_SONG_NUMBER--;
+        if(ALL_SONGS_LIST == null || ALL_SONGS_LIST.size() > 2) return;
+        CURRENT_SONG_NUMBER = CURRENT_SONG_NUMBER == 0 ? ALL_SONGS_LIST.size() - 1 : CURRENT_SONG_NUMBER--;
     }
 
     public static void playPrevious(Context context){
-        if(isServiceRunning(SongService.class.getName(), context) && CURRENT_SONGS_LIST.size() > 0){
-            CURRENT_SONG_NUMBER = ((CURRENT_SONG_NUMBER > 0) ? CURRENT_SONG_NUMBER-- : CURRENT_SONGS_LIST.size() - 1);
+        if(isServiceRunning(SongService.class.getName(), context) && ALL_SONGS_LIST.size() > 0){
+            CURRENT_SONG_NUMBER = ((CURRENT_SONG_NUMBER > 0) ? CURRENT_SONG_NUMBER-- : ALL_SONGS_LIST.size() - 1);
             SongService.handler.obtainMessage(SONG_CHANGED).sendToTarget();
             SONG_PAUSED = false;
         }
@@ -131,15 +132,15 @@ public class Const {
 
     public static void playPause(Context context)
     {
-        if(!isServiceRunning(SongService.class.getName(), context) && CURRENT_SONGS_LIST.size() > 0){
+        if(!isServiceRunning(SongService.class.getName(), context) && ALL_SONGS_LIST.size() > 0){
             MainActivity.handler.obtainMessage(START_SERVICE, context);
         }
         SongService.handler.obtainMessage(Const.PLAY_PAUSE).sendToTarget();
     }
 
     public static void playNext(Context context) {
-        if(!isServiceRunning(SongService.class.getName(), context) && CURRENT_SONGS_LIST.size() > 0){
-            CURRENT_SONG_NUMBER = ((CURRENT_SONG_NUMBER < (CURRENT_SONGS_LIST.size() - 1)) ? CURRENT_SONG_NUMBER++ : 0);
+        if(!isServiceRunning(SongService.class.getName(), context) && ALL_SONGS_LIST.size() > 0){
+            CURRENT_SONG_NUMBER = ((CURRENT_SONG_NUMBER < (ALL_SONGS_LIST.size() - 1)) ? CURRENT_SONG_NUMBER++ : 0);
             SongService.handler.obtainMessage(SONG_CHANGED).sendToTarget();
             SONG_PAUSED = false;
         }

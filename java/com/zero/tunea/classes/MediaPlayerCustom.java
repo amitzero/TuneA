@@ -76,7 +76,7 @@ public class MediaPlayerCustom{
             Log.e("getSong()", "ListSize is 0");
             return null;
         }
-        return Const.CURRENT_SONGS_LIST.get(CURRENT_SONG_POSITION);
+        return Const.ALL_SONGS_LIST.get(CURRENT_SONG_POSITION);
     }
 
     private void play() {

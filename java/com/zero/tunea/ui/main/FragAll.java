@@ -66,7 +66,7 @@ public class FragAll extends Fragment {
         empty = root.findViewById(R.id.textViewEmpty);
         empty.setText(R.string.LOADING);
         listView = root.findViewById(R.id.list);
-        if(Const.CURRENT_SONGS_LIST.size() > 0){
+        if(Const.ALL_SONGS_LIST.size() > 0){
             initSongs();
         }
         return root;
@@ -80,29 +80,30 @@ public class FragAll extends Fragment {
     }
 
     private void addItemToPlayList(int index){
-        Song song = Const.CURRENT_SONGS_LIST.get(index);
+        Song song = Const.ALL_SONGS_LIST.get(index);
         MainActivity.handler.obtainMessage(Const.ADD_ITEM_TO_PLAYLIST,song).sendToTarget();
     }
 
     private void addItemToFavorite(int index){
-        Song song = Const.CURRENT_SONGS_LIST.get(index);
+        Song song = Const.ALL_SONGS_LIST.get(index);
         MainActivity.handler.obtainMessage(Const.ADD_ITEM_TO_FAVORITE,song).sendToTarget();
     }
 
     private void deleteItem(int index){
-        Song song = Const.CURRENT_SONGS_LIST.get(index);
+        Song song = Const.ALL_SONGS_LIST.get(index);
         MainActivity.handler.obtainMessage(Const.DELETE_ITEM,song).sendToTarget();
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void initSongs(){
         empty.setVisibility(View.GONE);
         listView.setVisibility(View.VISIBLE);
-        listView.setAdapter(new Adapter(context, Const.CURRENT_SONGS_LIST));
+        listView.setAdapter(new Adapter(context, Const.ALL_SONGS_LIST));
         listView.setOnItemClickListener((adapterView, view, index, id) -> playItem(index));
         listView.setOnItemLongClickListener((adapterView, view, i, l) -> {
 
             PopupMenu popup = new PopupMenu(context, view);
-            popup.getMenuInflater().inflate(R.menu.more_menu, popup.getMenu());
+            popup.inflate(R.menu.more_menu);
             popup.show();
 
             popup.setOnMenuItemClickListener(item -> {

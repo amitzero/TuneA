@@ -47,4 +47,6 @@
     <string name="add_to_favorite">Add to favorite</string>
     <string name="create_new_playlist">Add new Playlist</string>
     <string name="playlist_name">Playlist Name</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
+    <string name="delete_permanently">Delete permanently</string>
 </resources>

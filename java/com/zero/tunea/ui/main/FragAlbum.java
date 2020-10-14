@@ -3,7 +3,7 @@ package com.zero.tunea.ui.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,7 +37,7 @@ public class FragAlbum extends Fragment {
     private Context context;
     private ListView listView;
     private View root;
-    private ImageView artistArt;
+    private ImageView albumArt;
 
     ArrayList<String[]> list = null;
 
@@ -71,7 +71,7 @@ public class FragAlbum extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.list, null);
-        artistArt = root.findViewById(R.id.ArtistOrAlbumArt);
+        albumArt = root.findViewById(R.id.ArtistOrAlbumArt);
         TextView empty = root.findViewById(R.id.textViewEmpty);
         empty.setVisibility(View.GONE);
         listView = root.findViewById(R.id.list);
@@ -83,7 +83,7 @@ public class FragAlbum extends Fragment {
 
     private void setAlbumView(){
         Const.SHOWING_INNER_LIST_ALBUM = false;
-        artistArt.setVisibility(View.GONE);
+        albumArt.setVisibility(View.GONE);
         BaseAdapter adapter = new BaseAdapter() {
             @Override
             public int getCount() {
@@ -150,12 +150,7 @@ public class FragAlbum extends Fragment {
                 return item;
             }
         };
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                setSongView(i);
-            }
-        });
+        listView.setOnItemClickListener((adapterView, view, i, l) -> setSongView(i));
         listView.setAdapter(adapter);
         listView.setSelection(index_old);
     }
@@ -163,60 +158,19 @@ public class FragAlbum extends Fragment {
     private  void  setSongView(int index){
         index_old = index;
         Const.SHOWING_INNER_LIST_ALBUM = true;
-        artistArt.setVisibility(View.VISIBLE);
+        albumArt.setVisibility(View.VISIBLE);
         ArrayList<Song> songsOfArtist = new ArrayList<>();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-        @SuppressLint("InlinedApi")
-        String[] columns = {
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.ALBUM_ID,
-        };
-
-        @SuppressLint("InlinedApi")
-        String selection = MediaStore.Audio.Media.ALBUM +"=\"" + list.get(index)[0] + "\"";
-        Cursor c = context.getContentResolver().query(uri, columns, selection, null, null);
-        assert c != null;
-        c.moveToLast();
-        do {
-            Song songData = new Song();
-
-            String title = c.getString(c.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            @SuppressLint("InlinedApi")
-            String artist = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            @SuppressLint("InlinedApi")
-            String album = c.getString(c.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-            @SuppressLint("InlinedApi")
-            long duration = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            String data = c.getString(c.getColumnIndex(MediaStore.Audio.Media.DATA));
-            long albumId = c.getLong(c.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-
-            MediaMetadataRetriever metaRetriver = new MediaMetadataRetriever();
-            metaRetriver.setDataSource(data);
-            String genre = metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-            byte[] image = null;
-            try {
-                image = metaRetriver.getEmbeddedPicture();
-            } catch (Exception e){
-                e.printStackTrace();
+        boolean albumArtNotAdded = true;
+        for(Song song : Const.ALL_SONGS_LIST){
+            if(song.album != null && song.album.equalsIgnoreCase(list.get(index)[0])) {
+                songsOfArtist.add(song);
+                if(albumArtNotAdded && song.image != null){
+                    albumArt.setImageBitmap(BitmapFactory.decodeByteArray(song.image, 0, song.image.length));
+                    albumArtNotAdded = false;
+                }
             }
-
-            songData.setTitle(title);
-            songData.setArtist(artist);
-            songData.setAlbum(album);
-            songData.setAlbumId(albumId);
-            songData.setGenre(genre);
-            songData.setPath(data);
-            songData.setDuration(duration);
-            songData.setImageByte(image);
-            songsOfArtist.add(songData);
         }
-        while (c.moveToPrevious());
-        c.close();
+
         listView.setAdapter(new Adapter(getContext(), songsOfArtist));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

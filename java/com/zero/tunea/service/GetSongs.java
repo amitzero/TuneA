@@ -109,9 +109,9 @@ public class GetSongs extends IntentService {
         if (listOfSongs.size() == 0 && MainActivity.handler != null){
             MainActivity.handler.obtainMessage(Const.SONG_LIST_EMPTY).sendToTarget();
         }
-        if(listOfSongs.size() != Const.CURRENT_SONGS_LIST.size()){
-            Const.CURRENT_SONGS_LIST.clear();
-            Const.CURRENT_SONGS_LIST = listOfSongs;
+        if(listOfSongs.size() != Const.ALL_SONGS_LIST.size()){
+            Const.ALL_SONGS_LIST.clear();
+            Const.ALL_SONGS_LIST = listOfSongs;
             if(MainActivity.handler != null){
                 MainActivity.handler.obtainMessage(Const.SONG_LIST_CHANGE).sendToTarget();
             }
@@ -165,33 +165,34 @@ public class GetSongs extends IntentService {
     {
         Cursor c = Const.database.getCursorOfSongs();
         ArrayList<Song> listOfSongs = new ArrayList<>();
-        c.moveToFirst();
-        do {
-            Song songData = new Song();
-            int id = c.getInt(c.getColumnIndex(Const.ID));
-            String title = c.getString(c.getColumnIndex(Const.TITLE));
-            String artist = c.getString(c.getColumnIndex(Const.ARTIST));
-            String album = c.getString(c.getColumnIndex(Const.ALBUM));
-            long album_id = c.getLong(c.getColumnIndex(Const.ALBUM_ID));
-            String genre = c.getString(c.getColumnIndex(Const.GENRE));
-            String path = c.getString(c.getColumnIndex(Const.PATH));
-            long duration = c.getLong(c.getColumnIndex(Const.DURATION));
-            byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
+        if(c.moveToFirst()) {
+            do {
+                Song songData = new Song();
+                int id = c.getInt(c.getColumnIndex(Const.ID));
+                String title = c.getString(c.getColumnIndex(Const.TITLE));
+                String artist = c.getString(c.getColumnIndex(Const.ARTIST));
+                String album = c.getString(c.getColumnIndex(Const.ALBUM));
+                long album_id = c.getLong(c.getColumnIndex(Const.ALBUM_ID));
+                String genre = c.getString(c.getColumnIndex(Const.GENRE));
+                String path = c.getString(c.getColumnIndex(Const.PATH));
+                long duration = c.getLong(c.getColumnIndex(Const.DURATION));
+                byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
 
-            songData.id = id;
-            songData.setTitle(title);
-            songData.setArtist(artist);
-            songData.setAlbum(album);
-            songData.setAlbumId(album_id);
-            songData.setGenre(genre);
-            songData.setPath(path);
-            songData.setDuration(duration);
-            songData.setImageByte(image);
-            listOfSongs.add(songData);
-        } while (c.moveToNext());
+                songData.id = id;
+                songData.setTitle(title);
+                songData.setArtist(artist);
+                songData.setAlbum(album);
+                songData.setAlbumId(album_id);
+                songData.setGenre(genre);
+                songData.setPath(path);
+                songData.setDuration(duration);
+                songData.setImageByte(image);
+                listOfSongs.add(songData);
+            } while (c.moveToNext());
+        }
         c.close();
-        Const.CURRENT_SONGS_LIST.clear();
-        Const.CURRENT_SONGS_LIST = listOfSongs;
+        Const.ALL_SONGS_LIST.clear();
+        Const.ALL_SONGS_LIST = listOfSongs;
 
         if (listOfSongs.size() < 1 && MainActivity.handler != null){
             MainActivity.handler.obtainMessage(Const.SONG_LIST_EMPTY).sendToTarget();
@@ -203,7 +204,7 @@ public class GetSongs extends IntentService {
 
     private void addSongsToDataBase(){
 
-        for(Song song : Const.CURRENT_SONGS_LIST){
+        for(Song song : Const.ALL_SONGS_LIST){
             ContentValues songData = new ContentValues();
             songData.put(Const.TITLE, song.title);
             songData.put(Const.ARTIST, song.artist);

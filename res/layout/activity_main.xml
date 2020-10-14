@@ -96,7 +96,7 @@
         android:id="@+id/player_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:translationZ="10dp">
+        android:translationZ="-10dp">
 
         <include layout="@layout/bottom_sheet" />
 
