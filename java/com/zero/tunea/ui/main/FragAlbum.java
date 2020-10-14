@@ -12,7 +12,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -172,12 +171,7 @@ public class FragAlbum extends Fragment {
         }
 
         listView.setAdapter(new Adapter(getContext(), songsOfArtist));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int index, long id) {
-                Toast.makeText(context, ""+index, Toast.LENGTH_SHORT).show();
-            }
-        });
+        listView.setOnItemClickListener((adapterView, view, index1, id) -> Toast.makeText(context, ""+ index1, Toast.LENGTH_SHORT).show());
 
     }
 
