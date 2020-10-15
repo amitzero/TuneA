@@ -6,7 +6,7 @@
             android:tint="#61E16C">
             <corners android:radius="2dp"/>
             <size android:height="10dp" />
-		</shape>
+        </shape>
     </item>
     <item android:id="@android:id/progress"
         android:gravity="center_vertical|fill_horizontal">

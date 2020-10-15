@@ -14,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
-import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -164,7 +163,7 @@ public class SongService extends Service {
         mediaPlayer.play(Const.CURRENT_SONG_NUMBER);
     }
 
-    private String CHANNEL_ID = "MY_CHANNEL";
+    private final String CHANNEL_ID = "MY_CHANNEL";
     private void createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
@@ -264,18 +263,28 @@ public class SongService extends Service {
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .build();
 
-        RemoteViews expandedView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.custom_notification);
+        RemoteViews simpleContentView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.custom_notification);
+        RemoteViews expandedView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.big_notification);
         Notification noti = new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_music_small_icon)
+                .setContentTitle(song.title)
+                .setContentText(song.artist+" - "+song.album)
                 .setLargeIcon(BitmapFactory.decodeByteArray(Const.getCurrentSong().image, 0, Const.getCurrentSong().image.length))
-                .setCustomContentView(expandedView)
+                .setCustomContentView(simpleContentView)
+//                .setCustomBigContentView(expandedView)
+                .setAllowSystemGeneratedContextualActions(false)
+                .setContent(expandedView)
+//                .setCustomHeadsUpContentView(expandedView)
                 .addAction(R.drawable.play_prev, "Previous", pendingIntentPrev)
                 .addAction(R.drawable.play, "Play", pendingIntentPlayPause)
                 .addAction(R.drawable.play_next, "Next", pendingIntentNext)
-                .setStyle(new Notification.DecoratedMediaCustomViewStyle()
-//                        .setShowActionsInCompactView(0, 1, 2)
-                    .setMediaSession(new MediaSession(getApplicationContext(),"TAG").getSessionToken())
+                .setStyle(new Notification.MediaStyle()
+                        .setShowActionsInCompactView(0, 1, 2)
+//                    .setMediaSession(new MediaSession(getApplicationContext(),"TAG").getSessionToken())
                 )
+                .setColorized(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setCategory(Notification.CATEGORY_SERVICE)
                 .build();
 
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
@@ -455,9 +464,7 @@ public class SongService extends Service {
         }
         metadataEditor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, mDummyAlbumArt);
         metadataEditor.apply();
-
     }
-
 
 //ExoPlayer
 //

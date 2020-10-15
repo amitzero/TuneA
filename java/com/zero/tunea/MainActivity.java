@@ -19,11 +19,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +38,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.zero.tunea.classes.Const;
 import com.zero.tunea.classes.Song;
@@ -60,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
     SearchView searchView;
     SectionsPagerAdapter sectionsPagerAdapter;
 
-    @SuppressWarnings("rawtypes")
-    BottomSheetBehavior bottomSheetBehavior;
-    LinearLayout bottomSheetLayout;
-    RelativeLayout mini_player;
-    LinearLayout full_player;
+//    Object of mini player View
+    private LinearLayout player;
+    private ImageView albumArt, playPrevious, playPause, playNext;
+    private TextView songTitle, artist, album, genre, currentPosition, duration;
+    private ProgressBar seekBar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -182,43 +184,52 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.imageViewSettings).setOnClickListener(view -> {
 //                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            findViewById(R.id.player_container).setTranslationZ(10);
-        });
-        findViewById(R.id.exit_full_player).setOnClickListener(v -> findViewById(R.id.player_container).setTranslationZ(-10));
 
-//        initBottomSheet();
+        });
+
+        player = findViewById(R.id.mini_player);
+        albumArt = findViewById(R.id.album_art);
+        playPrevious = findViewById(R.id.bt_prev);
+        playPause = findViewById(R.id.bt_play_pause);
+        playNext = findViewById(R.id.bt_next);
+        songTitle = findViewById(R.id.title);
+        artist = findViewById(R.id.artist_name);
+        album = findViewById(R.id.album);
+        genre = findViewById(R.id.genre);
+        currentPosition = findViewById(R.id.current_position);
+        duration = findViewById(R.id.duration);
+        seekBar = findViewById(R.id.seekBar);
+        initPlayer();
     }
 
-    @SuppressWarnings("deprecation")
-    private void initBottomSheet(){
-        bottomSheetLayout = findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-        bottomSheetBehavior.setHideable(false);
-        mini_player = findViewById(R.id.mini_player);
-        full_player = findViewById(R.id.full_player);
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+    private void initPlayer(){
+        if (!Const.isServiceRunning(SongService.class.getName(), this))
+            return;
+        if(Const.SONG_PAUSED){
+            playPause.setImageResource(R.drawable.play);
+        } else {
+            playPause.setImageResource(R.drawable.pause);
+        }
+    }
+
+    private void playerVisibility(boolean visible){
+
+        Animation anim = AnimationUtils.loadAnimation(this, visible ? android.R.anim.fade_in : android.R.anim.fade_out);
+        anim.setDuration(2000);
+        player.startAnimation(anim);
+        anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-                        full_player.setVisibility(View.GONE);
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED:
-                        full_player.setVisibility(View.VISIBLE);
-                        break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        break;
-                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-                        break;
-                }
+            public void onAnimationStart(Animation animation) {
+
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            public void onAnimationEnd(Animation animation) {
+                player.setVisibility(visible ? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
 
             }
         });
@@ -263,6 +274,12 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == PERMISSION_CODE && resultCode == Activity.RESULT_OK && Settings.canDrawOverlays(this)){
             Toast.makeText(getApplicationContext(), "Overlay Permission Granted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        initPlayer();
+        super.onResume();
     }
 
     @Override
