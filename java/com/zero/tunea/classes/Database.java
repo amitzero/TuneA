@@ -173,14 +173,14 @@ public class Database extends SQLiteOpenHelper
                 byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
 
                 songData.id = id;
-                songData.setTitle(title);
-                songData.setArtist(artist);
-                songData.setAlbum(album);
-                songData.setAlbumId(album_id);
-                songData.setGenre(genre);
-                songData.setPath(path);
-                songData.setDuration(duration);
-                songData.setImageByte(image);
+                songData.title = title;
+                songData.artist = artist;
+                songData.album = album;
+                songData.albumId = album_id;
+                songData.genre = genre;
+                songData.path = path;
+                songData.duration = duration;
+                songData.image = image;
                 list.add(songData);
             } while (c.moveToNext());
         }

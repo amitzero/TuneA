@@ -3,6 +3,8 @@ package com.zero.tunea.classes;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -10,12 +12,16 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import com.zero.tunea.MainActivity;
+import com.zero.tunea.R;
 import com.zero.tunea.service.SongService;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Const {
 
+    @SuppressLint("StaticFieldLeak")
+    private static Context context;
     public static Handler handler;
 
     //public static final int FRAG_PLAYLIST = 1;
@@ -70,14 +76,17 @@ public class Const {
     public static final int REFRESH_METADATA = 19;
     public static final int START_SERVICE = 20;
 
+    public static void intense(Context context){
+        Const.context = context;
+        handler = getHandler();
+    }
+
     public static void message(int what){
         if(handler == null) handler = getHandler();
         handler.obtainMessage(what).sendToTarget();
     }
     public static void message(int what, Object object){
-        if(handler == null) {
-            handler = getHandler();
-        }
+        if(handler == null) handler = getHandler();
         handler.obtainMessage(what, object).sendToTarget();
     }
     @SuppressWarnings("deprecation")
@@ -183,4 +192,35 @@ public class Const {
         }
         return false;
     }
+
+    public static Bitmap defaultArt(){
+        return BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_white);
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static String duration(long milliseconds)
+    {
+        /*
+        long sec = (milliseconds / 1000) % 60;
+        long min = (milliseconds / (60 * 1000)) % 60;
+        long hour = milliseconds / (60 * 60 * 1000);
+
+        String s = (sec < 10) ? "0" + sec : "" + sec;
+        String m = (min < 10) ? "0" + min : "" + min;
+        String h = "" + hour;
+
+        String time = "";
+        if (hour > 0)
+        {
+            time = h + ":" + m + ":" + s;
+        }
+        else
+        {
+            time = m + ":" + s;
+        }
+         */
+
+        return String.format("%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(milliseconds), TimeUnit.MILLISECONDS.toSeconds(milliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)) );
+    }
+
 }

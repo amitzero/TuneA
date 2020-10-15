@@ -92,14 +92,14 @@ public class GetSongs extends IntentService {
 
 //            if (image == null) image = getAlbumart(albumId);
 
-                songData.setTitle(title);
-                songData.setArtist(artist);
-                songData.setAlbum(album);
-                songData.setAlbumId(albumId);
-                songData.setGenre(genre);
-                songData.setPath(data);
-                songData.setDuration(duration);
-                songData.setImageByte(image);
+                songData.title = title;
+                songData.artist = artist;
+                songData.album = album;
+                songData.albumId = albumId;
+                songData.genre = genre;
+                songData.path = data;
+                songData.duration = duration;
+                songData.image = image;
                 listOfSongs.add(songData);
             }
             while (c.moveToNext());
@@ -179,14 +179,14 @@ public class GetSongs extends IntentService {
                 byte[] image = c.getBlob(c.getColumnIndex(Const.IMAGE));
 
                 songData.id = id;
-                songData.setTitle(title);
-                songData.setArtist(artist);
-                songData.setAlbum(album);
-                songData.setAlbumId(album_id);
-                songData.setGenre(genre);
-                songData.setPath(path);
-                songData.setDuration(duration);
-                songData.setImageByte(image);
+                songData.title = title;
+                songData.artist = artist;
+                songData.album = album;
+                songData.albumId = album_id;
+                songData.genre = genre;
+                songData.path = path;
+                songData.duration = duration;
+                songData.image = image;
                 listOfSongs.add(songData);
             } while (c.moveToNext());
         }

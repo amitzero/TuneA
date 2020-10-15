@@ -113,7 +113,7 @@
             <ImageView
                 android:id="@+id/album_art"
                 android:layout_width="130dp"
-                android:background="@drawable/icon_white"
+                android:src="@drawable/icon_white"
                 android:layout_height="120dp"
                 android:contentDescription="@string/empty" />
 

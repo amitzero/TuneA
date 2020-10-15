@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.zero.tunea.classes.Const;
 import com.zero.tunea.service.GetSongs;
 
 import java.util.Timer;
@@ -46,6 +47,9 @@ public class FlashActivity extends Activity {
                 }
             }
         };
+
+        Const.intense(this);
+
         super.onCreate(savedInstanceState);
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
             Intent getSongs = new Intent(this, GetSongs.class);

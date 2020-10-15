@@ -1,5 +1,8 @@
 package com.zero.tunea.classes;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 public class Song {
 
     public int id;
@@ -18,43 +21,17 @@ public class Song {
         return title;
     }
 
-    public void setTitle(String title)
-    {
-        this.title = title;
+    public Bitmap albumArt(){
+        if (image == null) return Const.defaultArt();
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
-    public void setArtist(String artist)
-    {
-        this.artist = artist;
+/*
+    public Bitmap albumArt(Context context){
+        if (image == null){
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_white);
+        }
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
-
-    public void setAlbum(String album)
-    {
-        this.album = album;
-    }
-
-    public void setGenre(String genre)
-    {
-        this.genre = genre;
-    }
-
-    public void setPath(String path)
-    {
-        this.path = path;
-    }
-
-    public void setDuration(long duration)
-    {
-        this.duration = duration;
-    }
-
-    public void setAlbumId(long albumId)
-    {
-        this.albumId = albumId;
-    }
-
-    public void setImageByte(byte[] image)
-    {
-        this.image = image;
-    }
+*/
 }

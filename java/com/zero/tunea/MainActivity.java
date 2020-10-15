@@ -203,8 +203,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPlayer(){
-        if (!Const.isServiceRunning(SongService.class.getName(), this))
+        if (!Const.isServiceRunning(SongService.class.getName(), this)) {
+            player.setVisibility(View.GONE);
             return;
+        }
+        Song song = Const.getCurrentSong();
+        albumArt.setImageBitmap(song.albumArt());
+        songTitle.setText(song.title);
+        artist.setText(song.artist);
+        album.setText(song.album);
+        currentPosition.setText("");
+        duration.setText(Const.duration(song.duration));
         if(Const.SONG_PAUSED){
             playPause.setImageResource(R.drawable.play);
         } else {
